@@ -41,7 +41,7 @@ impl Default for Word
         }
     }
 }
-struct App
+pub struct App
 {
     word: Word
 }
@@ -55,5 +55,17 @@ impl Default for App
 }
 
 impl eframe::App for App{
-
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame)
+    {
+        egui::CentralPanel::default().show(ui, |ui| {
+            ui.heading("Based");
+            ui.horizontal(|ui|
+                {
+                    ui.add(
+                        egui::TextEdit::singleline(&mut self.word)
+                            .hint_text("enter a value")
+                    )
+                });
+        });
+    }
 }
