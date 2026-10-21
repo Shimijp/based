@@ -1,4 +1,5 @@
-
+use std::fmt;
+use std::fmt::{format, Formatter};
 use eframe::egui;
 
 pub enum Base
@@ -8,36 +9,67 @@ pub enum Base
     Bin,
 
 }
-#[repr(C)]
-union Value
+
+#[derive(Debug)]
+pub enum Value
 {
-    u_byte: u8,
-    u_double: u16,
-    u_triple: u32,
-    u_quadruple: u64,
-    i_byte: i8,
-    i_double: i16,
-    i_triple: i32,
-    i_quadruple: i32,
+    UByte(u8),
+    UDouble(u16),
+    UQuad(u32),
+    UEightByte(u64),
+    IByte(u8),
+    IDouble(u16),
+    IQuad(u32),
+    IEightByte(u64)
+
 }
+
+
 pub struct Word
 {
 
-    source: Value,
-    res: Value,
-    source_base: Base,
+
+    src_base: Base,
+    src_val: Value,
     res_base: Base,
+    res_val: Value,
 
 
 }
+
+impl Word
+{
+    pub fn src_to_str(&self) ->String
+    {
+        match self.src_base {
+            Base::Hex =>
+                {
+                    match self.src_val
+                    {
+                        Value::UByte(byte) | Value::IByte(byte) => format!("{:02x}", byte),
+                        Value::UDouble(bytes) | Value::IDouble(bytes) => format!("{:04x}", bytes),
+                        Value::UQuad(bytes) | Value::IQuad(bytes) => format!("{:08x}", bytes),
+                        Value::UEightByte(bytes) | Value::IEightByte(bytes) => format!("{}")
+
+                    };
+                },
+            Base::Dec => {},
+            Base::Bin => {  },
+
+        }
+        "".to_string()
+    }
+}
+
 impl Default for Word
 {
     fn default() -> Self {
         Word{
-            source: Value{u_byte : 0},
-            res :  Value{u_byte : 0},
-            source_base: Base::Hex,
-            res_base: Base::Dec
+
+            src_base: Base::Hex,
+            src_val: Value::UByte(0),
+            res_base: Base::Dec,
+            res_val : Value::UByte(0),
         }
     }
 }
@@ -57,12 +89,13 @@ impl Default for App
 impl eframe::App for App{
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame)
     {
+
         egui::CentralPanel::default().show(ui, |ui| {
             ui.heading("Based");
             ui.horizontal(|ui|
                 {
                     ui.add(
-                        egui::TextEdit::singleline(&mut self.word)
+                        egui::TextEdit::singleline(&mut self.word.src_val)
                             .hint_text("enter a value")
                     )
                 });
