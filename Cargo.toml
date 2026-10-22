@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 eframe = "0.37.0"
+strum_macros = "0.28.0"
